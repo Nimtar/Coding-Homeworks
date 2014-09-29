@@ -1,0 +1,206 @@
+// Ускова с.159 №1.cpp : Defines the entry point for the console application.
+//
+/* Для двусвязных списков.
+Реализуйте следующие операции для списков без заглавного элемента и с заглавным
+элементом:
+*инициализация списка;
+*добавление элемента в начало списка;
+*добавление элемента в конец списка;
+*удаление первого вхождения заданного элемента в список;
+*переворот списка, то есть такая переустановка ссылок в списке, при которой
+элементы списка следуют друг за другом в обратном порядкае;
+*печать элементов списка;
+*удаление всех элементов списка.
+*/
+
+#include <iostream>
+#include <conio.h>
+#include <ctime>
+
+using namespace std;
+
+struct list
+{
+	list* prev;
+	int info;
+	list* next;
+};
+
+void addToBeginning(list*, int);
+void addToEnd(list*&, int);
+void deleteFirstFound(list*, list*&, int);
+void changeOrder(list*, list*&);
+void printList(list*);
+void printListFromEnd(list*);
+void deleteWholeList(list*);
+
+int main()
+{
+	srand(time(0));
+
+	list* head = new list;
+	head->next = NULL;
+	head->prev = NULL;
+	int n;
+	cout << "\nInput how many elements in list is required.\n";
+	cin >> n;
+	addToBeginning(head, rand() % 20);
+	list* tail = head->next;
+	for (int i = 1; i < n / 2; ++i)
+	{
+		int value = rand() % 20;
+		addToBeginning(head, value);
+	}
+	cout << endl;
+	printList(head);
+
+	for (int i = n / 2; i < n; ++i)
+	{
+		int value = rand() % 20;
+		addToEnd(tail, value);
+	}
+	cout << endl;
+	printList(head);
+
+	changeOrder(head, tail);
+
+	cout << "\nThe list after re-ordering\n";
+	printList(head);
+
+	int toDelete;
+	cout << "\nInput an element to delete\n";
+	cin >> toDelete;
+	deleteFirstFound(head, tail, toDelete);
+
+	cout << endl;
+	printList(head);
+	cout << endl;
+	printListFromEnd(tail);
+
+	deleteWholeList(head);
+
+	cout << "\nNow list is\n";
+	printList(head);
+	cout << "\n:)\n";
+	
+	delete head;
+	tail = 0;
+	delete tail;
+	
+	_getch();
+	return 0;
+}
+
+void addToBeginning(list* head, int value)
+{
+	list* t = new list;
+	t->info = value;
+	t->prev = head;
+	t->next = head->next;
+	if (t->next != NULL) t->next->prev = t;
+	head->next = t;
+
+	t = 0;
+	delete t;
+}
+
+void addToEnd(list* &tail, int value)
+{
+	list* t = new list;
+	t->info = value;
+	t->prev = tail;
+	t->next = NULL;
+	tail->next = t;
+	tail = t;
+
+	t = 0;
+	delete t;
+}
+
+void deleteFirstFound(list* head, list* &tail, int value)
+{
+	list* previous = head;
+	list* curr = previous->next;
+	while (curr != NULL && curr->info != value)
+	{
+		previous = previous->next;
+		curr = curr->next;
+	}
+	if (curr != NULL)
+	{
+		previous->next = curr->next;
+		curr->next->prev = previous;
+		if (previous->next == NULL)
+			tail = previous;
+		delete curr;
+	}
+	else
+		cout << "\nThere are no such an elements in the list\n";
+
+	previous = 0;
+	delete previous;
+}
+
+void changeOrder(list* head, list* &tail)
+{
+	list* previous = head->next;
+	list* curr = previous->next;
+	
+	tail = head->next;
+	tail->prev = curr;
+	tail->next = NULL;
+
+	while (curr->next != NULL)
+	{
+		curr->prev = curr->next;
+		curr->next = previous;
+		previous = curr;
+		curr = curr->prev;
+	}
+	curr->next = previous;
+	curr->prev = head;
+	head->next = curr;
+	
+
+	previous = curr = 0;
+	delete previous; delete curr;
+
+}
+
+void printList(list* head)
+{
+	list* curr = head->next;
+	cout << endl;
+	while (curr != NULL)
+	{
+		cout << ' ' << curr->info << ' ';
+		curr = curr->next;
+	}
+
+	curr = 0;
+	delete curr;
+}
+
+void printListFromEnd(list* tail)
+{
+	list* k = tail;
+	while (k->prev != NULL)
+	{
+		cout << ' ' << k->info << ' ';
+		k = k->prev;
+	}
+	cout << endl;
+
+	k = 0;
+	delete k;
+}
+
+void deleteWholeList(list* head)
+{
+	while (head->next != NULL)
+	{
+		list* t = head->next;
+		head->next = t->next;
+		delete t;
+	}
+}
