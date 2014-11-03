@@ -1,6 +1,6 @@
 // Ускова с.159 №1.cpp : Defines the entry point for the console application.
 //
-/* Для двусвязных списков.
+/*
 Реализуйте следующие операции для списков без заглавного элемента и с заглавным
 элементом:
 *инициализация списка;
@@ -28,7 +28,7 @@ struct list
 
 void addToBeginning(list*, int);
 void addToEnd(list*&, int);
-void deleteFirstFound(list*, list*&, int);
+bool deleteFirstFound(list*, list*&, int);
 void changeOrder(list*, list*&);
 void printList(list*);
 void printListFromEnd(list*);
@@ -45,13 +45,16 @@ int main()
 	cout << "\nInput how many elements in list is required.\n";
 	cin >> n;
 	addToBeginning(head, rand() % 20);
+	cout << "\nThe first element is";
+	printList(head);
+
 	list* tail = head->next;
 	for (int i = 1; i < n / 2; ++i)
 	{
 		int value = rand() % 20;
 		addToBeginning(head, value);
 	}
-	cout << endl;
+	cout << "\n\nAdding in beginning of the list...";
 	printList(head);
 
 	for (int i = n / 2; i < n; ++i)
@@ -59,18 +62,19 @@ int main()
 		int value = rand() % 20;
 		addToEnd(tail, value);
 	}
-	cout << endl;
+	cout << "\n\n...and in the end";
 	printList(head);
 
 	changeOrder(head, tail);
 
-	cout << "\nThe list after re-ordering\n";
+	cout << "\n\nThe list after re-ordering\n";
 	printList(head);
 
 	int toDelete;
-	cout << "\nInput an element to delete\n";
+	cout << "\n\nInput an element to delete\n";
 	cin >> toDelete;
-	deleteFirstFound(head, tail, toDelete);
+	if (!deleteFirstFound(head, tail, toDelete) )
+		cout << "\nThere are no such elements in the list\n";
 
 	cout << endl;
 	printList(head);
@@ -79,9 +83,7 @@ int main()
 
 	deleteWholeList(head);
 
-	cout << "\nNow list is\n";
 	printList(head);
-	cout << "\n:)\n";
 	
 	delete head;
 	tail = 0;
@@ -117,7 +119,7 @@ void addToEnd(list* &tail, int value)
 	delete t;
 }
 
-void deleteFirstFound(list* head, list* &tail, int value)
+bool deleteFirstFound(list* head, list* &tail, int value)
 {
 	list* previous = head;
 	list* curr = previous->next;
@@ -133,12 +135,16 @@ void deleteFirstFound(list* head, list* &tail, int value)
 		if (previous->next == NULL)
 			tail = previous;
 		delete curr;
+		previous = 0;
+		return true;
 	}
 	else
-		cout << "\nThere are no such an elements in the list\n";
+	{
+		previous = 0;
+		return false;
+	}
 
-	previous = 0;
-	delete previous;
+
 }
 
 void changeOrder(list* head, list* &tail)
