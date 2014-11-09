@@ -1,0 +1,100 @@
+/* Ускова с.166 №9
+Карту, определяющую прямоугольную область моря, представили матрицей с
+логическими элементами (false - море, true - суша). Островом будем называть
+совокупность соприкасающихся (вертикальной или горизонтальной стороной) клеток
+матрицы со значениями true. Рассчитайте число островов на матрице-карте.
+*/
+#include <iostream>
+#include <conio.h>
+#include <time.h>
+
+using namespace std;
+
+void showMatr(bool**, int, int);
+void initMatr(bool**, int, int);
+void initMatr(bool**, int, int, bool);
+bool isIsland(bool**, bool**, int, int, int, int);
+
+void main()
+{
+	srand(time(0));
+	int n, m;
+	cout << "Input matrix dimensions\n";
+	cin >> n >> m;
+	bool** map = new bool *[n];
+	for (int i = 0; i < n; ++i)
+	{
+		map[i] = new bool[m];
+	}
+	initMatr(map, n, m);
+	showMatr(map, n, m);
+
+	bool** checkMap = new bool *[n];
+	for (int i = 0; i < n; ++i)
+		checkMap[i] = new bool[m];
+
+	initMatr(checkMap, n, m, 0);
+	
+	int amountOfIslands = 0;
+	for (int i = 0; i < n; ++i)
+	{
+		for (int j = 0; j < n; ++j)
+		{
+			if (!checkMap[i][j] && isIsland(map, checkMap, n, m, i, j))
+				amountOfIslands++;
+		}
+	}
+
+	cout << endl << amountOfIslands;
+	_getch();
+}
+
+void showMatr(bool** a, int nstr, int ncol)
+{
+	for (int i = 0; i < nstr; i++)
+	{
+		for (int j = 0; j < ncol; j++)
+		{
+			cout << a[i][j] << ' ';
+		}
+		cout << endl;
+	}
+	cout << endl;
+}
+
+void initMatr(bool** a, int nstr, int ncol)
+{
+	for (int i = 0; i < nstr; i++)
+	{
+		for (int j = 0; j < ncol; j++)
+		{
+			a[i][j] = (rand()%2);//float (rand()%20+1);
+		}
+	}
+}
+
+void initMatr(bool** a, int nstr, int ncol, bool value)
+{
+	for (int i = 0; i < nstr; i++){
+		for (int j = 0; j < ncol; j++){
+			a[i][j] = value;
+		}
+	}
+}
+
+bool isIsland(bool** map, bool** checkMap, int n, int m, int i, int j)
+{
+	if (!map[i][j]){
+		checkMap[i][j] = 1;
+		return 0;
+	}
+	if (map[i][j] && !checkMap[i][j])
+	{
+		checkMap[i][j] = 1;
+		if (i + 1 < n)
+			isIsland(map, checkMap, n, m, i + 1, j);
+		if (j + 1 < m)
+			isIsland(map, checkMap, n, m, i, j + 1);
+		return 1;
+	}
+}
