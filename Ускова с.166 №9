@@ -68,7 +68,7 @@ void initMatr(bool** a, int nstr, int ncol)
 	{
 		for (int j = 0; j < ncol; j++)
 		{
-			a[i][j] = (rand()%2);//float (rand()%20+1);
+			a[i][j] = (rand()%2);
 		}
 	}
 }
