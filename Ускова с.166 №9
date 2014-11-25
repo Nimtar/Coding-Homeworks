@@ -11,41 +11,21 @@
 using namespace std;
 
 void showMatr(bool**, int, int);
-void initMatr(bool**, int, int);
-void initMatr(bool**, int, int, bool);
+bool** initMatr(int, int);
+bool** initMatr(int, int, bool);
 bool isIsland(bool**, bool**, int, int, int, int);
+int countIslands(bool** map, int n, int m);
 
 void main()
 {
-	srand(time(0));
 	int n, m;
 	cout << "Input matrix dimensions\n";
 	cin >> n >> m;
-	bool** map = new bool *[n];
-	for (int i = 0; i < n; ++i)
-	{
-		map[i] = new bool[m];
-	}
-	initMatr(map, n, m);
+	bool** map = initMatr(n, m);
+
 	showMatr(map, n, m);
 
-	bool** checkMap = new bool *[n];
-	for (int i = 0; i < n; ++i)
-		checkMap[i] = new bool[m];
-
-	initMatr(checkMap, n, m, 0);
-	
-	int amountOfIslands = 0;
-	for (int i = 0; i < n; ++i)
-	{
-		for (int j = 0; j < n; ++j)
-		{
-			if (!checkMap[i][j] && isIsland(map, checkMap, n, m, i, j))
-				amountOfIslands++;
-		}
-	}
-
-	cout << endl << amountOfIslands;
+	cout << endl << countIslands(map, n, m);
 	_getch();
 }
 
@@ -62,39 +42,76 @@ void showMatr(bool** a, int nstr, int ncol)
 	cout << endl;
 }
 
-void initMatr(bool** a, int nstr, int ncol)
+bool** initMatr(int nstr, int ncol)
 {
+	srand(time(0));
+	bool** a = new bool*[nstr];
+	for (int i = 0; i < nstr; ++i)
+	{
+		a[i] = new bool[ncol];
+	}
+
 	for (int i = 0; i < nstr; i++)
 	{
 		for (int j = 0; j < ncol; j++)
 		{
-			a[i][j] = (rand()%2);
+			a[i][j] = bool(rand()%2);
 		}
 	}
+	return a;
 }
 
-void initMatr(bool** a, int nstr, int ncol, bool value)
+bool** initMatr(int nstr, int ncol, bool value)
 {
+	bool** a = new bool*[nstr];
+	for (int i = 0; i < nstr; ++i)
+		a[i] = new bool[ncol];
+
 	for (int i = 0; i < nstr; i++){
 		for (int j = 0; j < ncol; j++){
 			a[i][j] = value;
 		}
 	}
+	return a;
 }
 
 bool isIsland(bool** map, bool** checkMap, int n, int m, int i, int j)
 {
-	if (!map[i][j]){
-		checkMap[i][j] = 1;
+	if (checkMap[i][j])
 		return 0;
-	}
-	if (map[i][j] && !checkMap[i][j])
+	
+	checkMap[i][j] = 1;
+
+	if (!map[i][j])
+		return 0;
+	
+	//Если есть непроверенная "суша", то рекурсивно проверяем всех её соседей
+	if (j < m - 1)
+		isIsland(map, checkMap, n, m, i, j + 1);
+	if (i > 0)
+		isIsland(map, checkMap, n, m, i - 1, j);
+	if (j > 0)
+		isIsland(map, checkMap, n, m, i, j - 1);
+	if (i < n - 1)
+		isIsland(map, checkMap, n, m, i + 1, j);
+
+	return 1;
+}
+
+int countIslands(bool** map, int n, int m)
+{	
+	//checkMap[i][j] будет хранить данные о том, проверяли ли мы уже эту ячейку
+	bool** checkMap = initMatr(n, m, 0);
+
+	int amountOfIslands = 0;
+	
+	for (int i = 0; i < n; ++i)
 	{
-		checkMap[i][j] = 1;
-		if (i + 1 < n)
-			isIsland(map, checkMap, n, m, i + 1, j);
-		if (j + 1 < m)
-			isIsland(map, checkMap, n, m, i, j + 1);
-		return 1;
+		for (int j = 0; j < m; ++j)
+		{
+			if (!checkMap[i][j] && isIsland(map, checkMap, n, m, i, j))
+				amountOfIslands++;
+		}
 	}
+	return amountOfIslands;
 }
