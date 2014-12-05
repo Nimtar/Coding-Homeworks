@@ -19,163 +19,160 @@
 
 using namespace std;
 
-struct list
+struct Node
 {
-	list* prev;
+	Node* prev = NULL;
 	int info;
-	list* next;
+	Node* next = NULL;
 };
 
-void addToBeginning(list*, int);
-void addToEnd(list*&, int);
-bool deleteFirstFound(list*, list*&, int);
-void changeOrder(list*, list*&);
-void printList(list*);
-void printListFromEnd(list*);
-void deleteWholeList(list*);
+struct List
+{
+	Node* head = NULL;
+	Node* tail = NULL;
+};
+
+List* newList();
+void initList(List*&, int value);
+void addToBeginning(List*&, int);
+void addToEnd(List*&, int);
+bool deleteFirstFound(List*, int);
+void changeOrder(List*);
+void printList(List*);
+void printListFromEnd(List*);
+void deleteList(List*);
 
 int main()
 {
 	srand(time(0));
 
-	list* head = new list;
-	head->next = NULL;
-	head->prev = NULL;
+	List* list = newList();
 	int n;
 	cout << "\nInput how many elements in list is required.\n";
 	cin >> n;
-	addToBeginning(head, rand() % 20);
-	cout << "\nThe first element is";
-	printList(head);
 
-	list* tail = head->next;
-	for (int i = 1; i < n / 2; ++i)
-	{
-		int value = rand() % 20;
-		addToBeginning(head, value);
-	}
+	for (int i = 0; i < n / 2; ++i)
+		addToBeginning(list, rand() % 20);
+	
 	cout << "\n\nAdding in beginning of the list...";
-	printList(head);
+	printList(list);
 
 	for (int i = n / 2; i < n; ++i)
-	{
-		int value = rand() % 20;
-		addToEnd(tail, value);
-	}
-	cout << "\n\n...and in the end";
-	printList(head);
+		addToEnd(list, rand() % 20);
 
-	changeOrder(head, tail);
+	cout << "\n\n...and in the end";
+	printList(list);
+
+	changeOrder(list);
 
 	cout << "\n\nThe list after re-ordering\n";
-	printList(head);
+	printList(list);
 
 	int toDelete;
 	cout << "\n\nInput an element to delete\n";
 	cin >> toDelete;
-	if (!deleteFirstFound(head, tail, toDelete) )
+	if (!deleteFirstFound(list, toDelete) )
 		cout << "\nThere are no such elements in the list\n";
 
 	cout << endl;
-	printList(head);
+	printList(list);
 	cout << endl;
-	printListFromEnd(tail);
+	printListFromEnd(list);
 
-	deleteWholeList(head);
+	deleteList(list);
+	printList(list);
 
-	printList(head);
-	
-	delete head;
-	tail = 0;
-	delete tail;
+	delete list;
 	
 	_getch();
 	return 0;
 }
 
-void addToBeginning(list* head, int value)
+void addToBeginning(List* &list, int value)
 {
-	list* t = new list;
-	t->info = value;
-	t->prev = head;
-	t->next = head->next;
-	if (t->next != NULL) t->next->prev = t;
-	head->next = t;
-
-	t = 0;
-	delete t;
-}
-
-void addToEnd(list* &tail, int value)
-{
-	list* t = new list;
-	t->info = value;
-	t->prev = tail;
-	t->next = NULL;
-	tail->next = t;
-	tail = t;
-
-	t = 0;
-	delete t;
-}
-
-bool deleteFirstFound(list* head, list* &tail, int value)
-{
-	list* previous = head;
-	list* curr = previous->next;
-	while (curr != NULL && curr->info != value)
+	if (!list)
 	{
-		previous = previous->next;
-		curr = curr->next;
+		initList(list, value);
+		return;
 	}
-	if (curr != NULL)
+	Node* t = new Node;
+	t->info = value;
+	list->head->prev = t;
+	t->next = list->head;
+	list->head = t;
+
+	t = 0;
+	delete t;
+}
+
+void addToEnd(List* &list, int value)
+{
+	if (!list)
 	{
-		previous->next = curr->next;
-		curr->next->prev = previous;
-		if (previous->next == NULL)
-			tail = previous;
-		delete curr;
-		previous = 0;
-		return true;
+		initList(list, value);
+		return;
+	}
+	Node* t = new Node;
+	t->info = value;
+	t->prev = list->tail;
+	list->tail->next = t;
+	list->tail = t;
+
+	t = 0;
+	delete t;
+}
+
+bool deleteFirstFound(List* list, int value)
+{
+	if (!list)
+		return false;
+
+	Node* curr = list->head;
+	while (curr && curr->info != value)
+		curr = curr->next;
+
+	if (!curr)
+		return false;
+
+	if (curr == list->head){
+		if (curr->next){
+			list->head = curr->next;
+			list->head->prev = NULL;
+		}
+		else
+			list->head = list->tail = NULL;
+	}
+	else if (curr == list->tail)
+	{
+		list->tail = curr->prev;
+		list->tail->next = NULL;
 	}
 	else
 	{
-		previous = 0;
-		return false;
+		curr->prev->next = curr->next;
+		curr->next->prev = curr->prev;
 	}
 
-
+	delete curr;
+	return true;
 }
 
-void changeOrder(list* head, list* &tail)
+void changeOrder(List* list)
 {
-	list* previous = head->next;
-	list* curr = previous->next;
-	
-	tail = head->next;
-	tail->prev = curr;
-	tail->next = NULL;
+	if (!list || list->head == list->tail)
+		return;
 
-	while (curr->next != NULL)
-	{
-		curr->prev = curr->next;
-		curr->next = previous;
-		previous = curr;
-		curr = curr->prev;
-	}
-	curr->next = previous;
-	curr->prev = head;
-	head->next = curr;
-	
+	for (Node* curr = list->head; curr; curr = curr->prev)
+		swap(curr->next, curr->prev);
 
-	previous = curr = 0;
-	delete previous; delete curr;
-
+	swap(list->head, list->tail);
 }
 
-void printList(list* head)
+void printList(List* list)
 {
-	list* curr = head->next;
+	if (!list) return;
+
+	Node* curr = list->head;
 	cout << endl;
 	while (curr != NULL)
 	{
@@ -187,26 +184,38 @@ void printList(list* head)
 	delete curr;
 }
 
-void printListFromEnd(list* tail)
+void printListFromEnd(List* list)
 {
-	list* k = tail;
-	while (k->prev != NULL)
-	{
-		cout << ' ' << k->info << ' ';
-		k = k->prev;
-	}
+	if (!list) return;
+	
 	cout << endl;
-
-	k = 0;
-	delete k;
+	for (Node* k = list->tail; k; k = k->prev)
+		cout << ' ' << k->info << ' ';
+	cout << endl;
 }
 
-void deleteWholeList(list* head)
+void deleteList(List* list)
 {
-	while (head->next != NULL)
+	if (!list) return;
+
+	while (list->head)
 	{
-		list* t = head->next;
-		head->next = t->next;
+		Node* t = list->head;
+		list->head = t->next;
 		delete t;
 	}
+	list->tail = list->head = NULL;
+}
+
+void initList(List* &list, int value)
+{
+	list = new List;
+	list->head = new Node;
+	list->head->info = value;
+	list->tail = list->head;
+}
+
+List* newList()
+{
+	return NULL;
 }
