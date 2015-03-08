@@ -34,9 +34,11 @@ void main()
 	for (int i = 0; i < 26; ++i)
 	{
 		a[i].first = 0;
-		a[i].second = char(i + 'a');
-		for (vector<string>::iterator it = stringVect.begin();
-			it != stringVect.end(); ++it)
+		//It may be excessive in case we don't need to show a letter
+		//a[i].second = char(i + 'a');
+		
+		vector<string>::iterator it;
+		for (it = stringVect.begin(); it != stringVect.end(); ++it)
 		{
 			if ((*it).find(i + 'a') != string::npos)
 				++a[i].first;
