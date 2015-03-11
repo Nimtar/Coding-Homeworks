@@ -15,12 +15,11 @@ using namespace std;
 
 int fillVector(char* fileName, std::vector<std::string> &retVector);
 int renewFile(char* fileName);
-void bubbleSort(pair<int, char>*);
-int findK(pair<int, char>*);
+void bubbleSort(int*);
+int findK(int*);
 
 void main()
 {
-
 	if (!renewFile("SourceTextFile.txt") )
 		cerr << "Error: file can't be opened";
 	
@@ -28,20 +27,18 @@ void main()
 	if (!fillVector("SourceTextFile.txt", stringVect))
 		cerr << "Error: file can't be opened";
 	
-	pair<int, char>* a = new pair<int, char>[26];
+	int* a = new int[26];
 	
 	//Figure out every letter entity number;
 	for (int i = 0; i < 26; ++i)
 	{
-		a[i].first = 0;
-		//It may be excessive in case we don't need to show a letter
-		//a[i].second = char(i + 'a');
+		a[i] = 0;
 		
 		vector<string>::iterator it;
 		for (it = stringVect.begin(); it != stringVect.end(); ++it)
 		{
 			if ((*it).find(i + 'a') != string::npos)
-				++a[i].first;
+				++a[i];
 		}
 	}
 	
@@ -53,14 +50,14 @@ void main()
 	_getch();
 }
 
-void bubbleSort(pair<int, char>* a)
+void bubbleSort(int* a)
 {
 	for (int i = 0, sorted = 0; !sorted && i < 26; i++)
 	{
 		sorted = 1;
 		for (int j = 0; j < 26 - i - 1; j++)
 		{
-			if (a[j].first > a[j + 1].first)
+			if (a[j] > a[j + 1])
 			{
 				swap(a[j], a[j + 1]);
 				sorted = 0;
@@ -68,24 +65,20 @@ void bubbleSort(pair<int, char>* a)
 		}
 	}
 }
-
 //Find a number which is equal to its repetition number;
-int findK(pair<int, char>* a)
+int findK(int* a)
 {
 	short i = 0, k = 0, currentEntryAmount = 1;
-	while (!a[i++].first);
+	while (!a[i++]);
 	while (i < 26)
 	{
-		if (a[i].first == a[i - 1].first)
+		if (a[i] == a[i - 1])
 			++currentEntryAmount;
 		else
 		{
 			k = currentEntryAmount;
-			if (k == a[i - 1].first)
-			{
-			//	cout << a[i - 1].second << endl; //Use to demonstrate the letter found
+			if (k == a[i - 1])
 				return k;
-			}
 			currentEntryAmount = 1;
 		}
 		++i;
