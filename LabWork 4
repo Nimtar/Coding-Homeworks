@@ -122,6 +122,7 @@ double calcAngle(vector<Dot>& a, int ix0, int ix1, int ix2)
 	Dot x1(0, 0);
 	Dot x2(a[ix2].x - a[ix1].x, a[ix2].y - a[ix1].y);
 
+	// TOFIX: 
 	bool moreThanPi = (x2.y < tan(x0) * x2.x);
 
 	// The formula for cos(alpha)
