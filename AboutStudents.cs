@@ -62,26 +62,16 @@ namespace AboutStudents {
             return calcAvgMark();
         }
 
-        // I don't know how to do it in right way
         public Record parse (string str) {
-            int indOfSpace = str.IndexOf(' ');
-            surname = str.Substring(0, indOfSpace);
-            str = str.Remove(0, indOfSpace + 1);
+            string [] splitStrings = str.Split(new [] {' '});
 
-            indOfSpace = str.IndexOf(' ');
-            name = str.Substring(0, indOfSpace);
-            str = str.Remove(0, indOfSpace + 1);
+            short i = 0;
 
-            year = short.Parse(str.Substring(0, str.IndexOf(' ')));
-            str = str.Remove(0, str.IndexOf(' ') + 1);
-
-            for (int i = 0; i < marks.Length; i++) {
-                indOfSpace = str.IndexOf(' ');
-                if (-1 == indOfSpace) {
-                    indOfSpace = str.Length;
-                }
-                marks[i] = short.Parse(str.Substring(0, indOfSpace));
-                str = str.Remove(0, str.IndexOf(' ') + 1);
+            surname = splitStrings[i++];
+            name = splitStrings[i++];
+            year = short.Parse(splitStrings[i++]);
+            for (int j = 0; j < marks.Length; j++) {
+                marks[j] = short.Parse(splitStrings[i++]);
             }
 
             return this;
