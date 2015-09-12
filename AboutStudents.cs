@@ -18,7 +18,7 @@ namespace AboutStudents {
             StreamReader reader = new StreamReader("1.txt");
 
             while (!reader.EndOfStream) {
-                stack.Push(new Record().parse(reader.ReadLine()));
+                stack.Push(Record.parse(reader.ReadLine()));
             }
 
             while (stack.Count != 0) {
@@ -67,14 +67,15 @@ namespace AboutStudents {
 
             short i = 0;
 
-            surname = splitStrings[i++];
-            name = splitStrings[i++];
-            year = short.Parse(splitStrings[i++]);
+            string surname = splitStrings[i++];
+            string name = splitStrings[i++];
+            short year = short.Parse(splitStrings[i++]);
+            var marks = new short[5];
             for (int j = 0; j < marks.Length; j++) {
                 marks[j] = short.Parse(splitStrings[i++]);
             }
 
-            return this;
+            return new Record(name, surname, year, marks);
         }
     }
 }
