@@ -35,7 +35,7 @@ namespace AboutStudents {
             marks = new short[5];
         }
 
-        public Record (string name, string surname, short year, short [] marks) {
+        public static Record (string name, string surname, short year, short [] marks) {
             this.name = name;
             this.surname = surname;
             this.year = year;
