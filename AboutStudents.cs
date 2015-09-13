@@ -13,16 +13,16 @@ using System.IO;
 namespace AboutStudents {
     internal class Program {
         private static void Main (string [] args) {
-            Stack<Record> stack = new Stack<Record>();
+            var stack = new Stack<Record>();
 
-            StreamReader reader = new StreamReader("1.txt");
+            var reader = new StreamReader("1.txt");
 
             while (!reader.EndOfStream) {
                 stack.Push(Record.parse(reader.ReadLine()));
             }
 
             while (stack.Count != 0) {
-                var record = stack.Pop();
+                Record record = stack.Pop();
                 Console.WriteLine(record.surname + ' ' + record.getAvgMark());
             }
             Console.ReadKey();
