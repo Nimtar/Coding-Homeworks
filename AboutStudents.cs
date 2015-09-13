@@ -35,7 +35,7 @@ namespace AboutStudents {
             marks = new short[5];
         }
 
-        public static Record (string name, string surname, short year, short [] marks) {
+        public Record (string name, string surname, short year, short [] marks) {
             this.name = name;
             this.surname = surname;
             this.year = year;
@@ -62,7 +62,7 @@ namespace AboutStudents {
             return calcAvgMark();
         }
 
-        public Record parse (string str) {
+        public static Record parse (string str) {
             string [] splitStrings = str.Split(new [] {' '});
 
             short i = 0;
