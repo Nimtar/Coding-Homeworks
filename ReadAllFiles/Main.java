@@ -27,7 +27,7 @@ public class Main {
             Pattern pattern = Pattern.compile("^\\d+\\..+$");
             @Override
             public boolean accept(File dir, String name) {
-                return pattern.matcher(new File(name).getName()).find();
+                return pattern.matcher(name).find();
             }
         })){
             inputStreamList.add(new FileInputStream(directoryName + fileName));
