@@ -1,43 +1,51 @@
 package VSU;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
 public class Main {
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
 
         //TODO: Replace magic constant with args[0]
         String directoryName = "D:\\\u0422\u0415\u041a\u0421\u0422\u042b\\";
         File path = new File(directoryName);
 
-        List<FileInputStream> inputStreamList = new LinkedList<>();
+        //TODO: Replace current regex with "^in_\\d+.dat$"
+        File[] files = path.listFiles((dir, name) -> {
+            return Pattern.compile("^\\d+\\..+$").matcher(name).find();
+        });
 
-        /*
-        The following code fills the list of FileInputStream
-        with objects associated with files which are required in the task.
-        */
-        for (String fileName : path.list(new FilenameFilter() {
-            //TODO: Replace current regex with "^in_\\d+.dat$"
-            Pattern pattern = Pattern.compile("^\\d+\\..+$");
-            @Override
-            public boolean accept(File dir, String name) {
-                return pattern.matcher(name).find();
-            }
-        })){
-            inputStreamList.add(new FileInputStream(directoryName + fileName));
+        ExecutorService pool = Executors.newFixedThreadPool(files.length);
+        LinkedList<Future<Double>> futureList = new LinkedList<>();
+
+        for (File file : files) {
+            futureList.add(pool.submit(new Task<Double>(file)));
         }
 
-        for (FileInputStream fin : inputStreamList){
-            //see Runnable.java
-            new Thread(() -> {
-                System.out.println(fin.getChannel());
-            }).start();
+        double result = 0;
+        for (Future<Double> future : futureList) {
+            try {
+                result += future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        FileWriter fileWriter;
+        try {
+            fileWriter = new FileWriter(directoryName + "out.dat", false);
+            fileWriter.write(String.valueOf(result));
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
