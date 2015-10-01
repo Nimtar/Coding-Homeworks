@@ -14,15 +14,33 @@ public class Main {
 
     public static void main(String[] args) {
 
-        //TODO: Replace magic constant with args[0]
-        String directoryName = "D:\\\u0422\u0415\u041a\u0421\u0422\u042b\\";
-        File path = new File(directoryName);
-
+        String directoryName = args[0];
         //TODO: Replace current regex with "^in_\\d+.dat$"
-        File[] files = path.listFiles((dir, name) -> {
-            return Pattern.compile("^\\d+\\..+$").matcher(name).find();
-        });
+        String pattern = "^\\d+\\..+$";
 
+        double result = executeExprInFiles(findFiles(directoryName, pattern));
+        writeOutFile(result, directoryName + "out.dat");
+    }
+
+    private static void writeOutFile(double result, String outFileName) {
+        FileWriter fileWriter;
+        try {
+            fileWriter = new FileWriter(outFileName, false);
+            fileWriter.write(String.valueOf(result));
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static File[] findFiles(String directoryName, String pattern){
+        return new File(directoryName).listFiles((dir, name) -> {
+            return Pattern.compile(pattern).matcher(name).find();
+        });
+    }
+    
+    private static double executeExprInFiles(File[] files){
         ExecutorService pool = Executors.newFixedThreadPool(files.length);
         LinkedList<Future<Double>> futureList = new LinkedList<>();
 
@@ -38,14 +56,6 @@ public class Main {
                 e.printStackTrace();
             }
         }
-        FileWriter fileWriter;
-        try {
-            fileWriter = new FileWriter(directoryName + "out.dat", false);
-            fileWriter.write(String.valueOf(result));
-            fileWriter.flush();
-            fileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return result;
     }
 }
