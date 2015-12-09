@@ -21,12 +21,9 @@ void main()
 	int n, m;
 	cout << "Input matrix dimensions\n";
 	cin >> n >> m;
-	bool** map = initMatr(n, m);
+	char** map = new char* //initMatr(n, m);
 
-	showMatr(map, n, m);
-
-	cout << endl << countIslands(map, n, m);
-	_getch();
+	cout << countIslands(map, n, m);
 }
 
 void showMatr(bool** a, int nstr, int ncol)
@@ -75,14 +72,14 @@ bool** initMatr(int nstr, int ncol, bool value)
 	return a;
 }
 
-bool isIsland(bool** map, bool** checkMap, int n, int m, int i, int j)
+bool isIsland(char** map, bool** checkMap, int n, int m, int i, int j)
 {
 	if (checkMap[i][j])
 		return 0;
 	
 	checkMap[i][j] = 1;
 
-	if (!map[i][j])
+	if (map[i][j] != '0')
 		return 0;
 	
 	//Если есть непроверенная "суша", то рекурсивно проверяем всех её соседей
@@ -98,7 +95,7 @@ bool isIsland(bool** map, bool** checkMap, int n, int m, int i, int j)
 	return 1;
 }
 
-int countIslands(bool** map, int n, int m)
+int countIslands(char** map, int n, int m)
 {	
 	//checkMap[i][j] будет хранить данные о том, проверяли ли мы уже эту ячейку
 	bool** checkMap = initMatr(n, m, 0);
